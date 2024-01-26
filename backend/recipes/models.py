@@ -18,7 +18,6 @@ class Ingredients(models.Model):
         'Единицы измерения',
         max_length=MAX_LENGTH,
     )
-    # amount = models.PositiveSmallIntegerField('Количество', null=True)
 
     class Meta:
         verbose_name = 'Игредиент'
@@ -55,7 +54,7 @@ class Tag(models.Model):
         match = re.search(r'^#[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}', value)
         if not match:
             raise ValidationError(
-                ''
+                'Недопустимый формат цвета.'
             )
 
     class Meta:
@@ -67,12 +66,13 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
-    # id = models.IntegerField(primary_key=True)
     name = models.CharField(
         'Название',
         max_length=MAX_LENGTH,
     )
-    text = models.TextField('Текст')
+    text = models.TextField(
+        'Описание',
+    )
     ingredients = models.ManyToManyField(
         Ingredients,
         through='IngredientsRecipe',
@@ -84,10 +84,8 @@ class Recipe(models.Model):
         verbose_name='Время приготовления'
     )
     image = models.ImageField(
-        # 'Фото',
-        # upload_to='recipes/',
+        'Фото',
         null=True,
-        # default=None
     )
 
     created_at = models.DateTimeField(
@@ -103,7 +101,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         through='TagsRecipe',
-        verbose_name='',
+        verbose_name='Теги',
         related_name='recipes'
     )
 
@@ -133,11 +131,11 @@ class IngredientsRecipe(models.Model):
     )
 
     class Meta:
-        verbose_name = ''
-        verbose_name_plural = ''
+        verbose_name = 'Ингредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецептах'
 
     def __str__(self):
-        return f'{self.recipe}   {self.ingredients}'
+        return f'{self.recipe} {self.ingredients}'
 
 
 class TagsRecipe(models.Model):
@@ -161,19 +159,16 @@ class Favorite(models.Model):
         FoodgramUser,
         on_delete=models.CASCADE,
         related_name='is_favorited',
-        verbose_name='',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         related_name='is_favorited',
-        verbose_name='',
     )
-    # ext = models.SmallIntegerField(default=1)
 
     class Meta:
-        verbose_name = ''
-        verbose_name_plural = ''
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
         constraints = [
             models.UniqueConstraint(
                 fields=('user', 'recipe',),
@@ -190,19 +185,16 @@ class ShoppingCart(models.Model):
         FoodgramUser,
         on_delete=models.CASCADE,
         related_name='is_in_shopping_cart',
-        verbose_name='',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         related_name='is_in_shopping_cart',
-        verbose_name='',
     )
-    # ext = models.SmallIntegerField(default=1)
 
     class Meta:
-        verbose_name = ''
-        verbose_name_plural = ''
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Список покупок'
         constraints = [
             models.UniqueConstraint(
                 fields=('user', 'recipe',),
@@ -212,7 +204,7 @@ class ShoppingCart(models.Model):
 
     def __str__(self):
         return self.recipe
-    
+
 
 class Subsription(models.Model):
     user = models.ForeignKey(
@@ -229,17 +221,13 @@ class Subsription(models.Model):
     )
 
     class Meta:
-        verbose_name = ''
-        verbose_name_plural = ''
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
                 fields=('user', 'author',),
                 name='unique_subscription'
-            ),
-            # models.CheckConstraint(
-            #     check=~models.Q(user=models.F('author')),
-            #     name=''
-            # )
+            )
         ]
 
     def __str__(self):

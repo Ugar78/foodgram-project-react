@@ -1,8 +1,10 @@
-# from django.conf import settings
 from foodgram.settings import DEBUG, MEDIA_URL, MEDIA_ROOT
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
+
+
+handler404 = 'api.views.page_not_found'
 
 urlpatterns = [
     path('api/', include('api.urls')),

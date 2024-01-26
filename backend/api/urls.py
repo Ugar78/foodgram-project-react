@@ -7,9 +7,6 @@ from .views import (
     TagsViewSet,
     IngredientsViewSet,
     FoodgramUserViewSet,
-    CreateRecipeViewSet,
-    FavoriteViewSet
-    
 )
 
 router = DefaultRouter()

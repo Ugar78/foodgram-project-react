@@ -1,6 +1,5 @@
 from django_filters.rest_framework import FilterSet, filters
 from django_filters import ModelMultipleChoiceFilter
-from django_filters.widgets import BooleanWidget
 
 from recipes.models import Recipe, Tag
 from users.models import FoodgramUser
@@ -17,11 +16,15 @@ class RecipeFilter(FilterSet):
     author = filters.ModelChoiceFilter(queryset=FoodgramUser.objects.all())
 
     def favorited(self, queryset, name, value):
+        if self.request.user.is_anonymous:
+            return queryset.none()
         if value:
             return queryset.filter(is_favorited__user=self.request.user)
         return queryset
 
     def in_shopping_cart(self, queryset, name, value):
+        if self.request.user.is_anonymous:
+            return queryset.none()
         if value:
             return queryset.filter(is_in_shopping_cart__user=self.request.user)
         return queryset
