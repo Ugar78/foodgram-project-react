@@ -1,0 +1,2 @@
+password,last_login,is_superuser,username,first_name,last_name,email,is_staff,is_active,date_joined
+pbkdf2_sha256$260000$vQVH708gOPJdeVGck5lVV1$6FZ6WdXWkj6bAslatHpM2HBf13ST8/WNVGOiKc6jtFQ=,2024-01-22 23:51:52.680 +0100,false,ivan,ivan,ivanov,i@i.com,false,true,22/01/2024
