@@ -18,7 +18,7 @@
 FROM node:20 as build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install -g npm@10.4.0
 COPY . ./
 RUN npm run build
 CMD cp -r build result_build
