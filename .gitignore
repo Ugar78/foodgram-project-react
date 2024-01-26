@@ -132,4 +132,5 @@ dmypy.json
 .idea
 
 # local deploy
-/infra-dev
+infra-dev/
+infra/
