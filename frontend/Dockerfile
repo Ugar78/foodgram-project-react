@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 
-RUN npm ci
+RUN npx npm@6 ci
 
 COPY . .
 RUN npm run build
