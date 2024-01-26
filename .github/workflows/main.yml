@@ -69,7 +69,7 @@ jobs:
     - name: Set up nodeJS
       uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version: 20
 
     # - name: Install dependencies
     #   run: |
@@ -152,4 +152,4 @@ jobs:
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
-          sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /static/static/
+          # sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /static/static/
