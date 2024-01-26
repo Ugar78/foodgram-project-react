@@ -1,10 +1,12 @@
 FROM node:18
 WORKDIR /app
 
+RUN npm install --legacy-peer-deps
+
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 
-RUN npx npm@6 ci
+RUN npm ci
 
 COPY . .
 RUN npm run build
