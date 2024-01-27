@@ -78,16 +78,20 @@ jobs:
           sudo docker-compose rm -f backend frontend
           sudo docker image rm ugar78/foodgram_backend ugar78/foodgram_frontend
           sudo docker-compose pull backend frontend
-          touch .env
-          echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
-          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
-          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
-          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
-          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-          echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
           sudo docker-compose up -d
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
+#          # touch .env
+#          # echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
+#          # echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+#          # echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+#          # echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+#          # echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+#          # echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+#          # echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+#         # echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+          
 
   # send_message:
   #   name: Send message to Telegram
