@@ -10,9 +10,9 @@ class FoodgramUser(AbstractUser):
     username = models.CharField(
         'Имя пользователя', unique=True, max_length=150
     )
-    first_name = models.CharField('Имя',  max_length=150)
-    last_name = models.CharField('Фамилия',  max_length=150)
-    password = models.CharField('Пароль',  max_length=150)
+    first_name = models.CharField('Имя', max_length=150)
+    last_name = models.CharField('Фамилия', max_length=150)
+    password = models.CharField('Пароль', max_length=150)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name')
