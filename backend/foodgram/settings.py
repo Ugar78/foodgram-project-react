@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default=get_random_secret_key())
 
 DEBUG = os.getenv('DEBUG', default='False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='localhost').split(', ')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='*').split(', ')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -67,12 +67,13 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB', 'postgres'),
         'USER': os.getenv('POSTGRES_USER', 'postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'HOST': os.getenv('DB_HOST', 'db'),
         'PORT': os.getenv('DB_PORT', 5432)
     }
 }
 print(DATABASES)
 print(os.getenv('POSTGRES_PASSWORD'))
+print(os.getenv('DB_HOST'))
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
