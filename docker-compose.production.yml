@@ -33,8 +33,8 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
 
-  nginx:
-    image: nginx:1.19.3
+  gateway:
+    image: ugar78/foodgram_gateway
     ports:
       - 8000:80
     volumes:
