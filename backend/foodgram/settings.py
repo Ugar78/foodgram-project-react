@@ -72,6 +72,7 @@ DATABASES = {
     }
 }
 print(DATABASES)
+print(os.getenv('POSTGRES_PASSWORD'))
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
