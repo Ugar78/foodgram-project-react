@@ -1,17 +1,17 @@
-FROM node:18
-WORKDIR /app
+# FROM node:18
+# WORKDIR /app
 
-COPY package.json package.json
-COPY package-lock.json package-lock.json
+# COPY package.json package.json
+# COPY package-lock.json package-lock.json
 
-RUN npm ci
+# RUN npm ci
 
-COPY . .
-RUN npx browserslist@latest --update-db
-RUN npm run build
-RUN npm install --global http-server
+# COPY . .
+# RUN npx browserslist@latest --update-db
+# RUN npm run build
+# RUN npm install --global http-server
 
-CMD ["npx", "-y", "http-server", "-p", "8000", "/app/build"]
+# CMD ["npx", "-y", "http-server", "-p", "8000", "/app/build"]
 
 
 # FROM node:latest as build
@@ -22,10 +22,10 @@ CMD ["npx", "-y", "http-server", "-p", "8000", "/app/build"]
 # RUN npm run build --prod
 # CMD cp -r build result_build
 
-# FROM node:13.12.0-alpine as build
-# WORKDIR /app
-# COPY package*.json ./
-# RUN npm install
-# COPY . ./
-# RUN npm run build
-# CMD cp -r build result_build
+FROM node:13.12.0-alpine as build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . ./
+RUN npm run build
+CMD cp -r build result_build
