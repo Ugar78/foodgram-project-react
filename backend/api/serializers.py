@@ -156,8 +156,19 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = FoodgramUserSerializer(read_only=True)
     tags = TagsSerializer(many=True)
     ingredients = serializers.SerializerMethodField()
+    image = Base64ImageField(required=False, allow_null=True)
+    image_url = serializers.SerializerMethodField(
+        'get_image_url',
+        read_only=True,
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+
+    def get_image_url(self, obj):
+        if obj.image:
+            print(obj.image.url)
+            return obj.image.url
+        return None
 
     def get_ingredients(self, obj):
         ingredients = IngredientsRecipe.objects.filter(recipe=obj)
@@ -193,7 +204,11 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         many=True
     )
     ingredients = CreateUpdateIngredientsRecipeSerializer(many=True)
-    image = Base64ImageField()
+    image = Base64ImageField(required=False, allow_null=True)
+    image_url = serializers.SerializerMethodField(
+        'get_image_url',
+        read_only=True,
+    )
     cooking_time = serializers.IntegerField(
         validators=(
             MinValueValidator(
@@ -201,6 +216,11 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             ),
         )
     )
+
+    def get_image_url(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
 
     def validate_tags(self, value):
         if not value:
@@ -259,6 +279,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                 {'tags': 'Нужно выбрать хотя бы один тег.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        instance.image = validated_data.get('image', instance.image)
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         instance.tags.set(tags)

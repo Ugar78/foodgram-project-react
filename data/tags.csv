@@ -1,5 +1,5 @@
 name,color,slug
-завтрак,#E26C2D,завтрак
-обед,#C2DA54,обед
-полдник,#2DCB3A,полдник
-ужин,#6C2DAA,ужин
+завтрак,#E26C2D,breakfast
+обед,#C2DA54,lunch
+полдник,#2DCB3A,snack
+ужин,#6C2DAA,dinner
