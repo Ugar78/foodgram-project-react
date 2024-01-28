@@ -85,9 +85,9 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         'Фото',
-        upload_to='recipes/images/',
+        # upload_to='recipes/images/',
         null=True,
-        default=None
+        # default=None
     )
 
     created_at = models.DateTimeField(
