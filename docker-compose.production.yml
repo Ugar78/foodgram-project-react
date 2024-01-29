@@ -5,7 +5,6 @@ volumes:
   static_volume:
   media_volume:
   data:
-  redoc:
 
 services:
 
@@ -23,7 +22,6 @@ services:
       - data:/app/data/
       - static_volume:/static/
       - media_volume:/app/media/
-      - redoc:/app/docs/
     depends_on:
       - db
     restart: always
@@ -38,10 +36,10 @@ services:
     ports:
       - 9000:80
     volumes:
-      - ../docs/:/usr/share/nginx/html/api/docs/
+
       - static_volume:/var/html/static/
       - media_volume:/var/html/media/
-      - redoc:/usr/share/nginx/html/api/docs/
+
     depends_on:
       - backend
       - frontend
