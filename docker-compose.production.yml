@@ -21,12 +21,12 @@ services:
 
   frontend:
     image: ugar78/foodgram_frontend
-    command: cp -r /app/build/. /static/
+    command: cp -r /app/build/. /var/html/static/
     volumes:
       - static_volume:/static
 
-  nginx:
-    image: nginx:1.19.3
+  gateway:
+    image: ugar78/foodgram_gateway
     ports:
       - 9000:80
     volumes:
