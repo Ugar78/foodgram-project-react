@@ -20,7 +20,7 @@ services:
   frontend:
     image: ugar78/foodgram_frontend
     env_file: .env
-    command: cp -r /app/result_build/. /static/
+    command: cp -r /app/build/. /static/
     volumes:
       - static_volume:/static
   gateway:
