@@ -6,11 +6,11 @@ services:
       - ./db:/var/lib/postgresql/data/
     env_file: .env
   frontend:
-    image: ugar78/fg_frontend
+    image: ugar78/foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
   backend:
-    image: ugar78/fg_backend
+    image: ugar78/foodgram_backend
     restart: always
     volumes:
       - static_value:/app/static/
