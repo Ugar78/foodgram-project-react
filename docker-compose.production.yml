@@ -10,25 +10,24 @@ services:
     image: postgres:13
     env_file: .env
     volumes:
-      - pg_data_production:/var/lib/postgresql/data/
-
+      - pg_data_production:/var/lib/postgresql/data
   backend:
     image: ugar78/foodgram_backend
     env_file: .env
     volumes:
-      - static_volume:/static/
-      - media_volume:/app/media/
-
+      - static_volume:/static
+      - media_volume:/app/media
   frontend:
     image: ugar78/foodgram_frontend
-    command: cp -r /app/build/. /var/html/static/
+    env_file: .env
+    command: cp -r /app/result_build/. /static/
     volumes:
       - static_volume:/static
-
   gateway:
     image: ugar78/foodgram_gateway
+    env_file: .env
+    volumes:
+      - static_volume:/static
+      - media_volume:/app/media
     ports:
       - 9000:80
-    volumes:
-      - static_volume:/var/html/static/
-      - media_volume:/var/html/media/
