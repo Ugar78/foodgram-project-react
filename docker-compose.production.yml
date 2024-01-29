@@ -10,7 +10,7 @@ volumes:
 services:
 
   db:
-    image: postgres:14
+    image: postgres:13
     env_file: .env
     volumes:
       - pg_data_production:/var/lib/postgresql/data/
@@ -36,7 +36,7 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
 
-  nginx:
+  gateway:
     image: nginx:1.19.3
     ports:
       - 9000:80
