@@ -1,9 +1,8 @@
 from django.contrib import admin
 
-from recipes.models import (
-    Ingredients, IngredientsRecipe, Subsription,
-    Tag, Recipe, TagsRecipe
-)
+from recipes.models import (Ingredients, IngredientsRecipe, Recipe,
+                            Subsription, Tag, TagsRecipe)
+
 from .models import FoodgramUser
 
 

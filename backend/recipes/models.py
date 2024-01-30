@@ -1,7 +1,7 @@
 import re
 
-from django.db import models
 from django.core.validators import MinValueValidator
+from django.db import models
 from rest_framework.validators import ValidationError
 
 from users.models import FoodgramUser

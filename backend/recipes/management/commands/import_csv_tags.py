@@ -1,8 +1,9 @@
 import csv
+
 from django.core.management.base import BaseCommand
 
-from recipes.models import Tag
 from foodgram.settings import BASE_DIR
+from recipes.models import Tag
 
 
 class Command(BaseCommand):

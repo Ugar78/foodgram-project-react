@@ -1,35 +1,26 @@
-from django.http import HttpResponse, HttpResponseNotFound
 from django.db.models import Sum
+from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from rest_framework.decorators import action
-from rest_framework.permissions import (
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly
-)
 from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from .permissions import IsAuthorOrAdmin
-from .filters import RecipeFilter
-
-from .serializers import (
-    RecipeSerializer,
-    IngredientsSerializer,
-    TagsSerializer,
-    RecipeCreateUpdateSerializer,
-    SubsriptionSerializer,
-    FavoriteSerializer,
-    ShortRecipeSerializer
-)
-from recipes.models import (
-    Tag, Recipe, Ingredients, Favorite,
-    ShoppingCart, Subsription, IngredientsRecipe
-    )
+from recipes.models import (Favorite, Ingredients, IngredientsRecipe, Recipe,
+                            ShoppingCart, Subsription, Tag)
 from users.models import FoodgramUser
+
+from .filters import RecipeFilter
+from .permissions import IsAuthorOrAdmin
+from .serializers import (FavoriteSerializer, IngredientsSerializer,
+                          RecipeCreateUpdateSerializer, RecipeSerializer,
+                          ShortRecipeSerializer, SubsriptionSerializer,
+                          TagsSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

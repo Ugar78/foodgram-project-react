@@ -3,14 +3,11 @@ import base64
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator
 from django.shortcuts import get_object_or_404
-from rest_framework import serializers, exceptions, response, status
+from djoser.serializers import UserCreateSerializer, UserSerializer
+from rest_framework import exceptions, response, serializers, status
 
-from djoser.serializers import UserSerializer, UserCreateSerializer
-
-from recipes.models import (
-    Tag, Recipe, Ingredients, IngredientsRecipe,
-    Favorite, ShoppingCart, Subsription, TagsRecipe
-)
+from recipes.models import (Favorite, Ingredients, IngredientsRecipe, Recipe,
+                            ShoppingCart, Subsription, Tag, TagsRecipe)
 from users.models import FoodgramUser
 
 

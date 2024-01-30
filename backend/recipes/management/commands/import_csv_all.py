@@ -1,10 +1,10 @@
 import csv
+
 from django.core.management.base import BaseCommand
 
-from recipes.models import (
-    Ingredients, Tag, Recipe, IngredientsRecipe, TagsRecipe
-)
 from foodgram.settings import BASE_DIR
+from recipes.models import (Ingredients, IngredientsRecipe, Recipe, Tag,
+                            TagsRecipe)
 
 
 class Command(BaseCommand):
