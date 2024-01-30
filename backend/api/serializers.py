@@ -166,7 +166,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         if obj.image:
-            print(obj.image.url)
             return obj.image.url
         return None
 

@@ -1,33 +1,37 @@
-version: '3'
+version: '3.3'
 
 volumes:
-  pg_data_production:
-  static_volume:
-  media_volume:
+  pg_data:
+  static:
+  media:
 
 services:
   db:
     image: postgres:13
     env_file: .env
     volumes:
-      - pg_data_production:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
   backend:
+    depends_on:
+      - db
     image: ugar78/foodgram_backend
     env_file: .env
     volumes:
-      - static_volume:/static
-      - media_volume:/app/media
+      - static:/backend_static
+      - media:/media
   frontend:
-    image: ugar78/foodgram_frontend
     env_file: .env
-    command: cp -r /app/build/. /static/
+    image: ugar78/foodgram_frontend
+    command: cp -r /app/build/. /app/result_build/
     volumes:
-      - static_volume:/static
-  gateway:
+      - static:/app/result_build/
+  nginx:
+    depends_on:
+      - backend
     image: ugar78/foodgram_gateway
     env_file: .env
-    volumes:
-      - static_volume:/static
-      - media_volume:/app/media
     ports:
       - 9000:80
+    volumes:
+      - static:/static
+      - media:/media
