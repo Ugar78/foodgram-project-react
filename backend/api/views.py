@@ -113,12 +113,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @action(
-            detail=False,
-            methods=('get',),
-            permission_classes=(IsAuthenticated,),
-            url_path='download_shopping_cart',
-            url_name='download_shopping_cart'
-        )
+        detail=False,
+        methods=('get',),
+        permission_classes=(IsAuthenticated,),
+        url_path='download_shopping_cart',
+        url_name='download_shopping_cart'
+    )
     def download_shopping_cart(self, request):
         shopping_cart = ShoppingCart.objects.filter(user=self.request.user)
         recipes = [item.recipe.id for item in shopping_cart]

@@ -39,15 +39,14 @@ class Tag(models.Model):
         max_length=MAX_LENGTH,
     )
     color = models.CharField(
+        'Цвет',
         max_length=16,
-        null=True,
+        unique=True
     )
     slug = models.SlugField(
         'Слаг',
-        null=True,
         unique=True,
         max_length=MAX_LENGTH,
-        help_text='',
     )
 
     def validate_color(value):
@@ -84,10 +83,8 @@ class Recipe(models.Model):
         verbose_name='Время приготовления'
     )
     image = models.ImageField(
-        'Фото',
-        # upload_to='recipes/images/',
-        null=True,
-        # default=None
+        'Изображение',
+        upload_to='recipes/'
     )
 
     created_at = models.DateTimeField(
@@ -128,8 +125,9 @@ class IngredientsRecipe(models.Model):
         related_name='ingredients_recipe'
     )
     amount = models.PositiveSmallIntegerField(
-        validators=(MinValueValidator(1, ''),),
-        null=True
+        validators=(
+            MinValueValidator(1, 'Количество должно быть больше нуля'),
+        ),
     )
 
     class Meta:
@@ -137,7 +135,7 @@ class IngredientsRecipe(models.Model):
         verbose_name_plural = 'Ингредиенты в рецептах'
 
     def __str__(self):
-        return f'{self.recipe} {self.ingredients}'
+        return f'{self.recipe} - {self.ingredients}'
 
 
 class TagsRecipe(models.Model):
@@ -153,7 +151,7 @@ class TagsRecipe(models.Model):
     )
 
     def __str__(self):
-        return f'{self.tags} {self.recipe}'
+        return f'{self.tags} - {self.recipe}'
 
 
 class Favorite(models.Model):
@@ -213,13 +211,13 @@ class Subsription(models.Model):
         FoodgramUser,
         on_delete=models.CASCADE,
         related_name='follower',
-        verbose_name='',
+        verbose_name='Подписчик',
     )
     author = models.ForeignKey(
         FoodgramUser,
         on_delete=models.CASCADE,
         related_name='subscribers',
-        verbose_name='',
+        verbose_name='Автор рецепта',
     )
 
     class Meta:
@@ -233,4 +231,4 @@ class Subsription(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.user}  {self.author}'
+        return f'{self.user} - {self.author}'

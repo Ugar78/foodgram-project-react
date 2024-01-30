@@ -92,7 +92,7 @@ class IngredientsRecipeSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredients.id')
     name = serializers.ReadOnlyField(source='ingredients.name')
     measurement_unit = serializers.ReadOnlyField(
-       source='ingredients.measurement_unit'
+        source='ingredients.measurement_unit'
     )
 
     class Meta:
@@ -156,15 +156,11 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = FoodgramUserSerializer(read_only=True)
     tags = TagsSerializer(many=True)
     ingredients = serializers.SerializerMethodField()
-    image = Base64ImageField(required=False, allow_null=True)
-    image_url = serializers.SerializerMethodField(
-        'get_image_url',
-        read_only=True,
-    )
+    image = serializers.SerializerMethodField(read_only=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
-    def get_image_url(self, obj):
+    def get_image(self, obj):
         if obj.image:
             return obj.image.url
         return None
@@ -203,11 +199,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         many=True
     )
     ingredients = CreateUpdateIngredientsRecipeSerializer(many=True)
-    image = Base64ImageField(required=False, allow_null=True)
-    image_url = serializers.SerializerMethodField(
-        'get_image_url',
-        read_only=True,
-    )
+    image = Base64ImageField()
     cooking_time = serializers.IntegerField(
         validators=(
             MinValueValidator(
@@ -215,11 +207,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             ),
         )
     )
-
-    def get_image_url(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
 
     def validate_tags(self, value):
         if not value:
