@@ -1,9 +1,9 @@
 name: Main Foodgram workflow
 
-# on:
-#   push:
-#     branches:
-#       - master
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build_and_push_to_docker_hub:
