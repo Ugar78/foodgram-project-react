@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'colorfield',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
@@ -120,13 +121,13 @@ REST_FRAMEWORK = {
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'SERIALIZERS': {
-        'user_create': 'api.serializers.FoodgramUserCreateSerializer',
+        # 'user_create': 'api.serializers.FoodgramUserCreateSerializer',
         'user': 'api.serializers.FoodgramUserSerializer',
         'current_user': 'api.serializers.FoodgramUserSerializer',
     },
-    "PERMISSIONS": {
-        "user_list": ["rest_framework.permissions.AllowAny"],
-        "user": ["djoser.permissions.CurrentUserOrAdminOrReadOnly"],
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.AllowAny'],
+        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
     },
-    "HIDE_USERS": False
+    'HIDE_USERS': False
 }

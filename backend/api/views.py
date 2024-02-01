@@ -19,8 +19,8 @@ from .filters import RecipeFilter
 from .permissions import IsAuthorOrAdmin
 from .serializers import (FavoriteSerializer, IngredientsSerializer,
                           RecipeCreateUpdateSerializer, RecipeSerializer,
-                          ShortRecipeSerializer, SubsriptionSerializer,
-                          TagsSerializer)
+                          ShortRecipeSerializer, SubsriptionReadSerializer,
+                          TagsSerializer, ShoppingCartSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -38,66 +38,111 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateUpdateSerializer
         return RecipeSerializer
 
-    def add(self, model, user, pk, name):
-        try:
-            recipe = Recipe.objects.get(id=pk)
-        except Recipe.DoesNotExist:
-            return Response(
-                {'errors': f'рецепт отсутствует в {name}'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        relation = model.objects.filter(user=user, recipe=recipe)
-        if relation.exists():
-            return Response(
-                {'errors': f'Нельзя повторно добавить рецепт в {name}'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        model.objects.create(user=user, recipe=recipe)
-        serializer = ShortRecipeSerializer(
-            recipe,
-            context={'request': self.request}
+    def add(self, model, serializer, user, recipe, request):
+        queryset = model.objects.create(user=user, recipe=recipe)
+        serializer_add = serializer(
+            queryset, context={'request': request}
         )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer_add.data, status=status.HTTP_201_CREATED)
+        # recipe = get_object_or_404(Recipe, pk=pk)
+        # if model.objects.filter(user=user, recipe=recipe).exists():
+        #     return Response(
+        #         {'errors': f'Нельзя повторно добавить рецепт в {name}'},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
+        # model.objects.create(user=user, recipe=recipe)
+        # serializer = FavoriteSerializer(recipe)
+        # return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # try:
+        # recipe = Recipe.objects.get(id=pk)
+        # except Recipe.DoesNotExist:
+        #     return Response(
+        #         {'errors': f'рецепт отсутствует в {name}'},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
+        # relation = model.objects.filter(user=user, recipe=recipe)
+        # if relation.exists():
+        #     return Response(
+        #         {'errors': f'Нельзя повторно добавить рецепт в {name}'},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
+        # serializer.save(author=user, recipe=recipe)
+        # serializer = ShortRecipeSerializer(
+        #     recipe,
+        #     context={'request': self.request}
+        # )
+        # return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_rel(self, model, user, pk, name):
         recipe = get_object_or_404(Recipe, pk=pk)
         relation = model.objects.filter(user=user, recipe=recipe)
-        if not relation.exists():
+        relation.delete()
+        if relation.exists():
             return Response(
                 {'errors': f'Нельзя повторно удалить рецепт из {name}'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        rel = get_object_or_404(model, user=user, recipe=recipe)
-        rel.delete()
+        # rel = get_object_or_404(model, user=user, recipe=recipe)
+        # rel.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
         methods=('post', 'delete'),
-        url_path='favorite',
-        url_name='favorite'
+        # url_path='favorite',
+        # url_name='favorite'
     )
     def favorite(self, request, pk=None):
         user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
         if self.request.method == 'POST':
-            name = 'избранное'
-            return self.add(Favorite, user, pk, name)
+            return self.add(Favorite, FavoriteSerializer, user, recipe, request)
+            # name = 'избранное'
+            # queryset = Favorite.objects.create(user=user, recipe=recipe)
+            # serializer = FavoriteSerializer(
+            #     queryset, context={'request': request}
+            # )
+            # return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+            # serializer = FavoriteSerializer(
+            #     data={'user': user.id, 'recipe': recipe.id}
+            # )
+            # serializer.is_valid(raise_exception=True)
+            # serializer.save()
+            # return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # return self.add(Favorite, user, pk, name)
         if self.request.method == 'DELETE':
             name = 'избранного'
             return self.delete_rel(Favorite, user, pk, name)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        # user = self.request.user
+        # recipe = get_object_or_404(Recipe, pk=pk)
+        # if self.request.method == 'POST':
+        #     name = 'избранное'
+        #     return self.add(Favorite, user, recipe)
+        # if self.request.method == 'DELETE':
+        #     name = 'избранного'
+        #     return self.delete_rel(Favorite, user, pk, name)
+        # return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @action(
         detail=True,
         methods=('post', 'delete'),
-        url_path='shopping_cart',
-        url_name='shopping_cart'
+        # url_path='shopping_cart',
+        # url_name='shopping_cart'
     )
     def shopping_cart(self, request, pk=None):
         user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
         if self.request.method == 'POST':
-            name = 'список покупок'
-            return self.add(ShoppingCart, user, pk, name)
+            return self.add(ShoppingCart, ShoppingCartSerializer, user, recipe, request)
+            # name = 'список покупок'
+            # queryset = ShoppingCart.objects.create(user=user, recipe=recipe)
+            # serializer = ShoppingCartSerializer(
+            #     queryset, context={'request': request}
+            # )
+            # return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # return self.add(ShoppingCart, user, pk, name)
         if self.request.method == 'DELETE':
             name = 'списка покупок'
             return self.delete_rel(ShoppingCart, user, pk, name)
@@ -107,8 +152,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=False,
         methods=('get',),
         permission_classes=(IsAuthenticated,),
-        url_path='download_shopping_cart',
-        url_name='download_shopping_cart'
+        # url_path='download_shopping_cart',
+        # url_name='download_shopping_cart'
     )
     def download_shopping_cart(self, request):
         shopping_cart = ShoppingCart.objects.filter(user=self.request.user)
@@ -172,7 +217,7 @@ class FoodgramUserViewSet(UserViewSet):
         user = self.request.user
         queryset = user.follower.all()
         pages = self.paginate_queryset(queryset)
-        serializer = SubsriptionSerializer(
+        serializer = SubsriptionReadSerializer(
             pages,
             many=True,
             context={'request': request}
@@ -200,7 +245,7 @@ class FoodgramUserViewSet(UserViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             queryset = Subsription.objects.create(author=author, user=user)
-            serializer = SubsriptionSerializer(
+            serializer = SubsriptionReadSerializer(
                 queryset, context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -227,18 +272,26 @@ class FoodgramUserViewSet(UserViewSet):
         detail=False,
         methods=('get',),
         permission_classes=(IsAuthenticated,),
-        url_path='me'
+        # url_path='me'
     )
-    def get_me(self, request):
-        user = self.request.user
-        serializer = self.get_serializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_permissions(self):
+        if self.action == 'me':
+            return (IsAuthenticated(),)
+        return super().get_permissions()
+    
+    
+    
+    
+    # def get_me(self, request):
+        # user = self.request.user
+        # serializer = self.get_serializer(user)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-def page_not_found(request, exception):
-    url = reverse('home')
-    return HttpResponseNotFound(
-        f'<h1>Custom 404</h1>'
-        f'<p>Страницы с адресом {request.path} не существует</p>'
-        f'<a href="{request.build_absolute_uri(url)}">Идите на главную</a>'
-    )
+# def page_not_found(request, exception):
+#     url = reverse('home')
+#     return HttpResponseNotFound(
+#         f'<h1>Custom 404</h1>'
+#         f'<p>Страницы с адресом {request.path} не существует</p>'
+#         f'<a href="{request.build_absolute_uri(url)}">Идите на главную</a>'
+#     )

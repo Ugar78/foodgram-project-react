@@ -16,16 +16,12 @@ class RecipeFilter(FilterSet):
     author = filters.ModelChoiceFilter(queryset=FoodgramUser.objects.all())
 
     def favorited(self, queryset, name, value):
-        if self.request.user.is_anonymous:
-            return queryset.none()
-        if value:
+        if self.request.user.is_authenticated and value:
             return queryset.filter(is_favorited__user=self.request.user)
         return queryset
 
     def in_shopping_cart(self, queryset, name, value):
-        if self.request.user.is_anonymous:
-            return queryset.none()
-        if value:
+        if self.request.user.is_authenticated and value:
             return queryset.filter(is_in_shopping_cart__user=self.request.user)
         return queryset
 

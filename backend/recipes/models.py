@@ -1,22 +1,22 @@
 import re
 
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from rest_framework.validators import ValidationError
+from colorfield.fields import ColorField
 
 from users.models import FoodgramUser
-
-MAX_LENGTH = 200
+from foodgram.constants import MAX_LENGTH_MODELS_FIELDS, MIN_VALUE, MAX_VALUE
 
 
 class Ingredients(models.Model):
     name = models.CharField(
         'Название',
-        max_length=MAX_LENGTH,
+        max_length=MAX_LENGTH_MODELS_FIELDS,
     )
     measurement_unit = models.CharField(
         'Единицы измерения',
-        max_length=MAX_LENGTH,
+        max_length=MAX_LENGTH_MODELS_FIELDS,
     )
 
     class Meta:
@@ -36,9 +36,9 @@ class Ingredients(models.Model):
 class Tag(models.Model):
     name = models.CharField(
         'Название',
-        max_length=MAX_LENGTH,
+        max_length=MAX_LENGTH_MODELS_FIELDS,
     )
-    color = models.CharField(
+    color = ColorField(
         'Цвет',
         max_length=16,
         unique=True
@@ -46,7 +46,7 @@ class Tag(models.Model):
     slug = models.SlugField(
         'Слаг',
         unique=True,
-        max_length=MAX_LENGTH,
+        max_length=MAX_LENGTH_MODELS_FIELDS,
     )
 
     def validate_color(value):
@@ -67,7 +67,7 @@ class Tag(models.Model):
 class Recipe(models.Model):
     name = models.CharField(
         'Название',
-        max_length=MAX_LENGTH,
+        max_length=MAX_LENGTH_MODELS_FIELDS,
     )
     text = models.TextField(
         'Описание',
@@ -79,7 +79,10 @@ class Recipe(models.Model):
         related_name='recipes'
     )
     cooking_time = models.PositiveSmallIntegerField(
-        validators=(MinValueValidator(1),),
+        validators=(
+            MinValueValidator(MIN_VALUE, message='Время приготовления должно быть больше нуля.'),
+            MaxValueValidator(MAX_VALUE, message='Время приготовления должно быть меньше 32000.')
+        ),
         verbose_name='Время приготовления'
     )
     image = models.ImageField(
@@ -126,7 +129,8 @@ class IngredientsRecipe(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         validators=(
-            MinValueValidator(1, 'Количество должно быть больше нуля'),
+            MinValueValidator(MIN_VALUE, 'Количество должно быть больше нуля'),
+            MaxValueValidator(MAX_VALUE, 'Количество должно быть меньше 32000'),
         ),
     )
 

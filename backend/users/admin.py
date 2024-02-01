@@ -9,11 +9,13 @@ from .models import FoodgramUser
 class IngredientsInLine(admin.TabularInline):
     model = IngredientsRecipe
     extra = 1
+    min_num = 1
 
 
 class TagsInLine(admin.TabularInline):
     model = TagsRecipe
     extra = 1
+    min_num = 1
 
 
 class IngredientsAdmin(admin.ModelAdmin):
