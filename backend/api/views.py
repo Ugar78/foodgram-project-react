@@ -15,6 +15,7 @@ from recipes.models import (Favorite, Ingredients, IngredientsRecipe, Recipe,
 from users.models import FoodgramUser
 
 from .filters import RecipeFilter
+from .pagination import LimitPagination
 from .permissions import IsAuthorOrAdmin
 from .serializers import (FavoriteSerializer, IngredientsSerializer,
                           RecipeCreateUpdateSerializer, RecipeSerializer,
@@ -31,6 +32,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrAdmin,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+    pagination_class = LimitPagination
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
@@ -38,24 +40,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeSerializer
 
     def add(self, serializer, request, pk):
-        user = request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
         serializer_add = serializer(
-            data={'user': user.id, 'recipe': recipe.id},
+            data={'user': request.user.id, 'recipe': pk},
             context={'request': request}
         )
+        print(serializer_add)
         serializer_add.is_valid(raise_exception=True)
         serializer_add.save()
         return Response(serializer_add.data, status=status.HTTP_201_CREATED)
 
     def delete_rel(self, model, request, pk, name):
-        user = request.user
+        user = request.user.id
         recipe = get_object_or_404(Recipe, pk=pk)
-        relation = model.objects.filter(user=user, recipe=recipe)
-        relation.delete()
-        if relation.exists():
+        relation = model.objects.filter(user=user, recipe=recipe).delete()
+        if relation[0] == 0:
             return Response(
-                {'errors': f'Нельзя повторно удалить рецепт из {name}'},
+                {'errors': f'Нельзя повторно добавить рецепт в {name}'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -63,6 +63,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=('post', 'delete'),
+        permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk=None):
         if self.request.method == 'POST':
@@ -75,6 +76,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=('post', 'delete'),
+        permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk=None):
         if self.request.method == 'POST':
@@ -141,6 +143,7 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 
 class FoodgramUserViewSet(UserViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = LimitPagination
 
     @action(
         detail=False,
@@ -178,13 +181,20 @@ class FoodgramUserViewSet(UserViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if self.request.method == 'DELETE':
-            Subsription.objects.filter(user=user, author=author).delete()
+            subscriptions = Subsription.objects.filter(
+                user=user,
+                author=author
+            ).delete()
+            if subscriptions[0] == 0:
+                return Response(
+                    {'errors': 'Вы не подписаны на этого пользователя'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,
         methods=('get',),
-        permission_classes=(IsAuthenticated,),
     )
     def get_permissions(self):
         if self.action == 'me':

@@ -8,7 +8,7 @@ esac
 
 PATH_TO_MANAGE_PY=$(find ../ -name "manage.py" -not -path "*/env" -not -path "*/venv");
 BASE_DIR="$(dirname "${PATH_TO_MANAGE_PY}")";
-cd $BASE_DIR
+cd ../backend/
 status=$?;
 if [ $status -ne 0 ]; then
     echo "Убедитесь, что в проекте содержится только один файл manage.py";
