@@ -1,51 +1,51 @@
-version: '3.3'
+# version: '3.3'
 
-volumes:
-  pg_data:
-  static:
-  media:
-  data:
-  redoc:
+# volumes:
+#   pg_data:
+#   static:
+#   media:
+#   data:
+#   redoc:
 
-services:
+# services:
 
-  db:
-    image: postgres:13
-    env_file: .env
-    volumes:
-      - pg_data:/var/lib/postgresql/data/
-    restart: always
+#   db:
+#     image: postgres:13
+#     env_file: .env
+#     volumes:
+#       - pg_data:/var/lib/postgresql/data/
+#     restart: always
 
-  backend:
-    image: ugar78/foodgram_backend
-    env_file: .env
-    volumes:
-      - data:/app/data/
-      - static:/app/static/
-      - media:/app/media/
-      - redoc:/app/docs/
-    depends_on:
-      - db
-    restart: always
+#   backend:
+#     image: ugar78/foodgram_backend
+#     env_file: .env
+#     volumes:
+#       - data:/app/data/
+#       - static:/app/static/
+#       - media:/app/media/
+#       - redoc:/app/docs/
+#     depends_on:
+#       - db
+#     restart: always
 
-  frontend:
-    image: ugar78/foodgram_frontend
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ../frontend/:/app/result_build/
+#   frontend:
+#     image: ugar78/foodgram_frontend
+#     build:
+#       context: ../frontend
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ../frontend/:/app/result_build/
 
-  nginx:
-    image: ugar78/foodgram_gateway
-    ports:
-      - 9000:80
-    volumes:
-      - ../frontend/build:/usr/share/nginx/html/
-      - ../docs/:/usr/share/nginx/html/api/docs/
-      - static:/var/html/static/
-      - media:/var/html/media/
-      - redoc:/usr/share/nginx/html/api/docs/
-    depends_on:
-      - backend
-      - frontend
+#   nginx:
+#     image: ugar78/foodgram_gateway
+#     ports:
+#       - 9000:80
+#     volumes:
+#       - ../frontend/build:/usr/share/nginx/html/
+#       - ../docs/:/usr/share/nginx/html/api/docs/
+#       - static:/var/html/static/
+#       - media:/var/html/media/
+#       - redoc:/usr/share/nginx/html/api/docs/
+#     depends_on:
+#       - backend
+#       - frontend

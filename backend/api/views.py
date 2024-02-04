@@ -49,9 +49,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def delete_rel(self, model, request, pk, name):
         user = request.user.id
         recipe = get_object_or_404(Recipe, pk=pk)
-        relation = model.objects.filter(user=user, recipe=recipe).delete()
-        delete_cnt = (*relation,)[0]
-        print(delete_cnt)
+        delete_cnt, _ = model.objects.filter(user=user, recipe=recipe).delete()
+        # relation = model.objects.filter(user=user, recipe=recipe).delete()
+        # delete_cnt = (*relation,)[0]
+        # print(delete_cnt)
         if not delete_cnt:
             return Response(
                 {'errors': f'Нельзя повторно добавить рецепт в {name}'},
@@ -156,7 +157,7 @@ class FoodgramUserViewSet(UserViewSet):
         queryset = FoodgramUser.objects.filter(
             subscribers__in=subscription
         )
-        print(queryset)
+        # print(queryset)
         pages = self.paginate_queryset(queryset)
         serializer = SubsriptionReadSerializer(
             pages,
@@ -185,11 +186,11 @@ class FoodgramUserViewSet(UserViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if self.request.method == 'DELETE':
-            subscriptions = Subsription.objects.filter(
+            delete_subs, _ = Subsription.objects.filter(
                 user=user,
                 author=author
             ).delete()
-            if subscriptions[0] == 0:
+            if not delete_subs:
                 return Response(
                     {'errors': 'Вы не подписаны на этого пользователя'},
                     status=status.HTTP_400_BAD_REQUEST

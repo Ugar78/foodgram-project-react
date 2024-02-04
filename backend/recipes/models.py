@@ -1,9 +1,6 @@
-import re
-
 from colorfield.fields import ColorField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from rest_framework.validators import ValidationError
 
 from foodgram.constants import MAX_LENGTH_MODELS_FIELDS, MAX_VALUE, MIN_VALUE
 from users.models import FoodgramUser
@@ -50,12 +47,12 @@ class Tag(models.Model):
         max_length=MAX_LENGTH_MODELS_FIELDS,
     )
 
-    def validate_color(value):
-        match = re.search(r'^#[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}', value)
-        if not match:
-            raise ValidationError(
-                'Недопустимый формат цвета.'
-            )
+    # def validate_color(value):
+    #     match = re.search(r'^#[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}', value)
+    #     if not match:
+    #         raise ValidationError(
+    #             'Недопустимый формат цвета.'
+    #         )
 
     class Meta:
         verbose_name = 'Тег'
@@ -83,11 +80,11 @@ class Recipe(models.Model):
         validators=(
             MinValueValidator(
                 MIN_VALUE,
-                message='Время приготовления должно быть больше нуля.'
+                message=f'Время приготовления должно быть больше {MIN_VALUE}.'
             ),
             MaxValueValidator(
                 MAX_VALUE,
-                message='Время приготовления должно быть меньше 32000.'
+                message=f'Время приготовления должно быть меньше {MAX_VALUE}.'
             )
         ),
         verbose_name='Время приготовления'
@@ -138,11 +135,11 @@ class IngredientsRecipe(models.Model):
         validators=(
             MinValueValidator(
                 MIN_VALUE,
-                message='Количество должно быть больше нуля'
+                message=f'Количество должно быть больше {MIN_VALUE}.'
             ),
             MaxValueValidator(
                 MAX_VALUE,
-                message='Количество должно быть меньше 32000'
+                message=f'Количество должно быть меньше {MAX_VALUE}.'
             ),
         ),
     )
