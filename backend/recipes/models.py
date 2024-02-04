@@ -37,6 +37,7 @@ class Tag(models.Model):
     name = models.CharField(
         'Название',
         max_length=MAX_LENGTH_MODELS_FIELDS,
+        unique=True
     )
     color = ColorField(
         'Цвет',
@@ -81,10 +82,12 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         validators=(
             MinValueValidator(
-                MIN_VALUE, 'Время приготовления должно быть больше нуля.'
+                MIN_VALUE,
+                message='Время приготовления должно быть больше нуля.'
             ),
             MaxValueValidator(
-                MAX_VALUE, 'Время приготовления должно быть меньше 32000.'
+                MAX_VALUE,
+                message='Время приготовления должно быть меньше 32000.'
             )
         ),
         verbose_name='Время приготовления'
@@ -134,10 +137,12 @@ class IngredientsRecipe(models.Model):
     amount = models.PositiveSmallIntegerField(
         validators=(
             MinValueValidator(
-                MIN_VALUE, 'Количество должно быть больше нуля'
+                MIN_VALUE,
+                message='Количество должно быть больше нуля'
             ),
             MaxValueValidator(
-                MAX_VALUE, 'Количество должно быть меньше 32000'
+                MAX_VALUE,
+                message='Количество должно быть меньше 32000'
             ),
         ),
     )

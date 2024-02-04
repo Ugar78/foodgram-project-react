@@ -15,7 +15,6 @@ from recipes.models import (Favorite, Ingredients, IngredientsRecipe, Recipe,
 from users.models import FoodgramUser
 
 from .filters import RecipeFilter
-from .pagination import LimitPagination
 from .permissions import IsAuthorOrAdmin
 from .serializers import (FavoriteSerializer, IngredientsSerializer,
                           RecipeCreateUpdateSerializer, RecipeSerializer,
@@ -32,7 +31,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrAdmin,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    pagination_class = LimitPagination
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
@@ -41,10 +39,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def add(self, serializer, request, pk):
         serializer_add = serializer(
-            data={'user': request.user.id, 'recipe': pk},
+            data={'user': request.user, 'recipe': pk},
             context={'request': request}
         )
-        print(serializer_add)
         serializer_add.is_valid(raise_exception=True)
         serializer_add.save()
         return Response(serializer_add.data, status=status.HTTP_201_CREATED)
@@ -53,7 +50,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = request.user.id
         recipe = get_object_or_404(Recipe, pk=pk)
         relation = model.objects.filter(user=user, recipe=recipe).delete()
-        if relation[0] == 0:
+        delete_cnt = (*relation,)[0]
+        print(delete_cnt)
+        if not delete_cnt:
             return Response(
                 {'errors': f'Нельзя повторно добавить рецепт в {name}'},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -143,7 +142,6 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 
 class FoodgramUserViewSet(UserViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    pagination_class = LimitPagination
 
     @action(
         detail=False,
@@ -152,7 +150,13 @@ class FoodgramUserViewSet(UserViewSet):
     )
     def subscriptions(self, request):
         user = self.request.user
-        queryset = user.follower.all()
+        subscription = Subsription.objects.select_related(
+            'author'
+        ).filter(user=user)
+        queryset = FoodgramUser.objects.filter(
+            subscribers__in=subscription
+        )
+        print(queryset)
         pages = self.paginate_queryset(queryset)
         serializer = SubsriptionReadSerializer(
             pages,
@@ -192,10 +196,6 @@ class FoodgramUserViewSet(UserViewSet):
                 )
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(
-        detail=False,
-        methods=('get',),
-    )
     def get_permissions(self):
         if self.action == 'me':
             return (IsAuthenticated(),)
